@@ -39,8 +39,6 @@ public class QuestionService {
         }
         int[] savedAnswers = question.getAnswers();
 
-        System.out.println("answer = " + Arrays.toString(answer));
-        System.out.println("savedAnswers = " + Arrays.toString(savedAnswers));
         if (savedAnswers == null) {
             savedAnswers = new int[0];
         }
