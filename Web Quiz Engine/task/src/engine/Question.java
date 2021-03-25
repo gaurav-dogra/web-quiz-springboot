@@ -2,14 +2,30 @@ package engine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Arrays;
+
+@Validated
 public class Question {
+    @NotEmpty(message = "title can not be empty")
     private String title;
+    @NotEmpty(message = "text can not be empty")
     private String text;
+    @NotNull(message = "Options must not be null")
+    @Size(min = 2, message = "Options can not be less than two")
     private String[] options;
-    private int answer;
+    private int[] answer;
 
-    public Question(String title, String text, String[] options, int answer) {
+    public Question(@NotEmpty(message = "title can not be empty") String title,
+                    @NotEmpty(message = "text can not be empty") String text,
+                    @NotNull(message = "Options must not be null")
+                    @Size(min = 2, message = "Options can not be less than two")
+                            String[] options,
+                    int[] answer) {
         this.title = title;
         this.text = text;
         this.options = options;
@@ -27,11 +43,11 @@ public class Question {
     }
 
     public String[] getOptions() {
-        return options.clone();
+        return options;
     }
 
     @JsonIgnore
-    public int getAnswer(int option) {
+    public int[] getAnswers() {
         return answer;
     }
 
@@ -48,16 +64,19 @@ public class Question {
     }
 
     @JsonProperty
-    public void setAnswer(int answer) {
+    public void setAnswer(int[] answer) {
         this.answer = answer;
     }
 
-    public boolean isCorrect(int answer) {
-        return this.answer == answer;
-    }
+//    public boolean isCorrect(int answer) {
+//        return this.answer == answer;
+//    }
+
 
     @Override
     public String toString() {
-        return title + ": " + answer;
+        return title + ": " + text + ": " +
+                Arrays.toString(options) +
+                ": " + Arrays.toString(answer);
     }
 }
