@@ -1,65 +1,74 @@
 package engine;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class QuestionService {
-    private final Map<Integer, Question> questions = new HashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(1);
 
-    public Response[] getAll() {
-        return questions.keySet()
-                .stream()
-                .map(x -> new Response(x, questions.get(x)))
-                .toArray(Response[]::new);
+    private final QuestionRepository qRepository;
 
+    @Autowired
+    public QuestionService(QuestionRepository qRepository) {
+        this.qRepository = qRepository;
     }
 
-    public ResponseEntity<Response> getById(int id) {
-        Question question = questions.get(id);
-        if (question == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public List<QuestionWithoutAnswer> getAll() {
+        List<Question> dbCopies = qRepository.findAll();
+        List<QuestionWithoutAnswer> returnList = new ArrayList<>();
+        for (Question q : dbCopies) {
+            System.out.println("-----------------------------------------");
+            System.out.println(q);
+            returnList.add(new QuestionWithoutAnswer(q));
         }
-        return new ResponseEntity<>(new Response(id, question), HttpStatus.OK);
+        return returnList;
     }
 
-    public ResponseEntity<Answer> checkAnswer(int id, int[] answer) {
-        Question question = questions.get(id);
+    public QuestionWithoutAnswer getById(Long id) {
+        Question dbCopy = getFromDb(id);
+        return new QuestionWithoutAnswer(dbCopy);
+    }
 
-        if (question == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    private Question getFromDb(Long id) {
+        return qRepository.findById(id)
+                .orElseThrow(new NotFoundException());
+    }
+
+    public Answer checkAnswer(Long id, List<Integer> answers) {
+        Question dbCopy = getFromDb(id);
+        List<Integer> dbAnswers = dbCopy.getAnswer();
+        if (dbAnswers == null) {
+            dbAnswers = Collections.emptyList();
         }
-        int[] savedAnswers = question.getAnswers();
-
-        if (savedAnswers == null) {
-            savedAnswers = new int[0];
+        if (answers == null) {
+            answers = Collections.emptyList();
         }
+        HashSet<Integer> dbAnswersSet = new HashSet<>(dbAnswers);
+        HashSet<Integer> answersSet = new HashSet<>(answers);
 
-        if (answer == null) {
-            answer = new int[0];
-        }
-
-        Arrays.sort(savedAnswers);
-        Arrays.sort(answer);
-        if (Arrays.equals(answer, savedAnswers)) {
-            return new ResponseEntity<>(Answer.CORRECT_ANSWER, HttpStatus.OK);
+        if (answersSet.equals(dbAnswersSet)) {
+            return Answer.CORRECT_ANSWER;
         } else {
-            return new ResponseEntity<>(Answer.WRONG_ANSWER, HttpStatus.OK);
+            return Answer.WRONG_ANSWER;
         }
-
     }
 
-    public Response add(Question question) {
-        int id = idGenerator.getAndIncrement();
-        questions.put(id, question);
-        return new Response(id, question);
+    public QuestionWithoutAnswer add(Question question) {
+        System.out.println("=====================================");
+        System.out.println(question);
+        List<String> options = question.getOptions();
+        List<Integer> answers = question.getAnswer();
+        if ((options == null || options.isEmpty()) && !answers.isEmpty()) {
+            throw new BadRequestException();
+        }
+        Question dbCopy = qRepository.saveAndFlush(question);
+        return new QuestionWithoutAnswer(dbCopy);
     }
 }

@@ -1,36 +1,35 @@
 package engine;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.validation.annotation.Validated;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.util.Collections;
+import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Arrays;
-
-@Validated
+@Entity
 public class Question {
-    @NotEmpty(message = "title can not be empty")
-    private String title;
-    @NotEmpty(message = "text can not be empty")
-    private String text;
-    @NotNull(message = "Options must not be null")
-    @Size(min = 2, message = "Options can not be less than two")
-    private String[] options;
-    private int[] answer;
 
-    public Question(@NotEmpty(message = "title can not be empty") String title,
-                    @NotEmpty(message = "text can not be empty") String text,
-                    @NotNull(message = "Options must not be null")
-                    @Size(min = 2, message = "Options can not be less than two")
-                            String[] options,
-                    int[] answer) {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String title;
+    private String text;
+    @ElementCollection
+    private List<String> options;
+    @ElementCollection
+    private List<Integer> answer;
+
+
+    public Question(Long id, String title, String text, List<String> options, List<Integer> answer) {
+        this.id = id;
         this.title = title;
         this.text = text;
         this.options = options;
         this.answer = answer;
     }
+
+    public Question() {}
 
     public String getTitle() {
         return title;
@@ -40,13 +39,8 @@ public class Question {
         return text;
     }
 
-    public String[] getOptions() {
+    public List<String> getOptions() {
         return options;
-    }
-
-    @JsonIgnore
-    public int[] getAnswers() {
-        return answer;
     }
 
     public void setTitle(String title) {
@@ -57,24 +51,34 @@ public class Question {
         this.text = text;
     }
 
-    public void setOptions(String[] options) {
+    public void setOptions(List<String> options) {
         this.options = options;
     }
 
-    @JsonProperty
-    public void setAnswer(int[] answer) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public List<Integer> getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(List<Integer> answer) {
         this.answer = answer;
     }
 
-//    public boolean isCorrect(int answer) {
-//        return this.answer == answer;
-//    }
-
-
     @Override
     public String toString() {
-        return title + ": " + text + ": " +
-                Arrays.toString(options) +
-                ": " + Arrays.toString(answer);
+        return "Question{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", options=" + options +
+                ", answer=" + answer +
+                '}';
     }
 }

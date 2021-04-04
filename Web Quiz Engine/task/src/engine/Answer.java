@@ -6,12 +6,15 @@ public class Answer {
     public static final Answer WRONG_ANSWER =
             new Answer(false, "Wrong answer! Please, try again.");
 
-    private final boolean success;
-    private final String feedback;
+    private boolean success;
+    private String feedback;
 
     public Answer(boolean success, String feedback) {
         this.success = success;
         this.feedback = feedback;
+    }
+
+    public Answer() {
     }
 
     public boolean isSuccess() {
