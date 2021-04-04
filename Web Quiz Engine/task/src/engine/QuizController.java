@@ -1,6 +1,7 @@
 package engine;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,9 +36,16 @@ public class QuizController {
         return qService.checkAnswer(id, answer.getValue());
     }
 
-    @PostMapping(path = "api/quizzes")
+    @PostMapping("api/quizzes")
     public QuestionWithoutAnswer addQuestion(@Valid @RequestBody Question question) {
         System.out.println("QuizController.addQuestion");
         return qService.add(question);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/api/quizzes/{id}")
+    public void deleteQuestion(@PathVariable long id) {
+        System.out.println("QuizController.deleteQuestion");
+        qService.deleteQuestion(id);
     }
 }

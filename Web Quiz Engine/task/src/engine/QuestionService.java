@@ -64,4 +64,10 @@ public class QuestionService {
         Question dbCopy = qRepository.saveAndFlush(question);
         return new QuestionWithoutAnswer(dbCopy);
     }
+
+    public void deleteQuestion(long id) {
+        qRepository.findById(id)
+                .orElseThrow(new NotFoundException());
+        qRepository.deleteById(id);
+    }
 }
