@@ -3,6 +3,7 @@ package engine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class QuizController {
     }
 
     @PostMapping(path = "api/quizzes")
-    public QuestionWithoutAnswer addQuestion(@RequestBody Question question) {
+    public QuestionWithoutAnswer addQuestion(@Valid @RequestBody Question question) {
         System.out.println("QuizController.addQuestion");
         return qService.add(question);
     }

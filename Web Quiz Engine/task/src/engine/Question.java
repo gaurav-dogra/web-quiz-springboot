@@ -1,21 +1,30 @@
 package engine;
 
+import org.springframework.validation.annotation.Validated;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Collections;
 import java.util.List;
 
 @Entity
+@Validated
 public class Question {
 
     @Id
     @GeneratedValue
     private Long id;
+    @NotEmpty(message = "title can not be null or blank")
     private String title;
+    @NotEmpty(message = "text can not be null or blank")
     private String text;
     @ElementCollection
+    @NotEmpty(message = "options can not be null or empty")
+    @Size(min = 2, message = "Minimum 2 options required")
     private List<String> options;
     @ElementCollection
     private List<Integer> answer;

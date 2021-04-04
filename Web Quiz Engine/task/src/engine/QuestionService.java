@@ -1,8 +1,6 @@
 package engine;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,11 +61,6 @@ public class QuestionService {
     public QuestionWithoutAnswer add(Question question) {
         System.out.println("=====================================");
         System.out.println(question);
-        List<String> options = question.getOptions();
-        List<Integer> answers = question.getAnswer();
-        if ((options == null || options.isEmpty()) && !answers.isEmpty()) {
-            throw new BadRequestException();
-        }
         Question dbCopy = qRepository.saveAndFlush(question);
         return new QuestionWithoutAnswer(dbCopy);
     }
