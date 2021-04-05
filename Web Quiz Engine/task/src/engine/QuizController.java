@@ -1,5 +1,6 @@
 package engine;
 
+import engine.model.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +48,10 @@ public class QuizController {
     public void deleteQuestion(@PathVariable long id) {
         System.out.println("QuizController.deleteQuestion");
         qService.deleteQuestion(id);
+    }
+
+    @PostMapping("/api/register")
+    public String register() {
+        return ("<h1>QuizController.register</h1>");
     }
 }
