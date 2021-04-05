@@ -1,5 +1,7 @@
 package engine;
 
+import engine.model.Question;
+
 import java.util.Collections;
 import java.util.List;
 

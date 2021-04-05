@@ -1,4 +1,4 @@
-package engine;
+package engine.model;
 
 import org.springframework.validation.annotation.Validated;
 
