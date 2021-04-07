@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     final UserDetailsService userDetailsService;
+
     @Autowired
     public SecurityConfiguration(MyUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -28,10 +29,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers("/api/quizzes/*").hasRole("USER")
-            .antMatchers("/api/register").permitAll()
-            .and().formLogin();
+                .antMatchers("/api/quizzes", "/api/quizzes/**")
+                .authenticated()
+                .antMatchers("/api/register").permitAll()
+                .and()
+                .csrf().disable()
+                .formLogin();
     }
+
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
